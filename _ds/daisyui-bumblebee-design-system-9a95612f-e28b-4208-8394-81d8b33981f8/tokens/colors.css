@@ -1,0 +1,49 @@
+/* ============================================================
+   daisyUI — Bumblebee theme color tokens
+   Ported verbatim from daisyui/src/themes/bumblebee.css (daisyUI 5)
+   Yellow primary · amber/orange secondary · black accent · light base
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Base surfaces (neutral light) ---- */
+  --color-base-100: oklch(100% 0 0);          /* page / card surface */
+  --color-base-200: oklch(97% 0 0);           /* subtle raised / hover */
+  --color-base-300: oklch(92% 0 0);           /* borders, inset, track */
+  --color-base-content: oklch(20% 0 0);       /* text on base */
+
+  /* ---- Primary — bumblebee yellow ---- */
+  --color-primary: oklch(85% 0.199 91.936);
+  --color-primary-content: oklch(42% 0.095 57.708);
+
+  /* ---- Secondary — warm amber/orange ---- */
+  --color-secondary: oklch(75% 0.183 55.934);
+  --color-secondary-content: oklch(40% 0.123 38.172);
+
+  /* ---- Accent — black ---- */
+  --color-accent: oklch(0% 0 0);
+  --color-accent-content: oklch(100% 0 0);
+
+  /* ---- Neutral — warm dark gray ---- */
+  --color-neutral: oklch(37% 0.01 67.558);
+  --color-neutral-content: oklch(92% 0.003 48.717);
+
+  /* ---- Semantic / status ---- */
+  --color-info: oklch(74% 0.16 232.661);
+  --color-info-content: oklch(39% 0.09 240.876);
+  --color-success: oklch(76% 0.177 163.223);
+  --color-success-content: oklch(37% 0.077 168.94);
+  --color-warning: oklch(82% 0.189 84.429);
+  --color-warning-content: oklch(41% 0.112 45.904);
+  --color-error: oklch(70% 0.191 22.216);
+  --color-error-content: oklch(39% 0.141 25.723);
+
+  /* ---- Semantic aliases (convenience for hand-authored CSS) ---- */
+  --surface-page: var(--color-base-100);
+  --surface-card: var(--color-base-100);
+  --surface-muted: var(--color-base-200);
+  --border-default: var(--color-base-300);
+  --text-body: var(--color-base-content);
+  --text-muted: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+}

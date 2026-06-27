@@ -1,0 +1,28 @@
+/* ============================================================
+   daisyUI — Bumblebee shape tokens
+   radius · size · border · depth · noise
+   These drive the rounding & physicality of every component.
+   ============================================================ */
+
+:root {
+  /* ---- Corner radii (bumblebee values) ---- */
+  --radius-selector: 1rem;     /* checkbox, toggle, badge, small pills */
+  --radius-field: 0.5rem;      /* button, input, select, tab — the field radius */
+  --radius-box: 1rem;          /* card, modal, alert — the box radius */
+
+  /* ---- Component base sizing unit ---- */
+  --size-selector: 0.25rem;    /* base unit for selector controls */
+  --size-field: 0.25rem;       /* base unit for fields; height = unit * N */
+
+  /* ---- Border + physical depth ---- */
+  --border: 1px;               /* default border width on all components */
+  /* depth: 1 = subtle 3d highlight/shadow, 0 = flat */
+  --depth: 1; /* @kind other */
+  /* noise: surface noise texture amount (off) */
+  --noise: 0; /* @kind other */
+
+  /* ---- Convenience radius aliases ---- */
+  --radius-pill: 9999px;
+  --radius-card: var(--radius-box);
+  --radius-control: var(--radius-field);
+}

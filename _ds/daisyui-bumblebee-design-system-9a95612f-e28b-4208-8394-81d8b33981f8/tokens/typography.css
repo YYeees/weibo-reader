@@ -1,0 +1,37 @@
+/* ============================================================
+   daisyUI — Typography tokens
+   daisyUI ships no font of its own; it inherits the host stack.
+   We standardise on the Tailwind-default system UI stack (what
+   daisyui.com itself renders with) plus a mono stack for code.
+   ============================================================ */
+
+:root {
+  /* ---- Font families ---- */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* ---- Type scale (Tailwind scale, rem) ---- */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px — daisyUI control default */
+  --text-base: 1rem;      /* 16px — body */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+
+  /* ---- Weights ---- */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;  /* daisyUI button/label weight */
+  --weight-bold: 700;
+
+  /* ---- Line heights ---- */
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+}

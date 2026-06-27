@@ -1,0 +1,48 @@
+/* ============================================================
+   Base reset + page defaults (adapted from daisyUI base/reset).
+   Sets the body to base-100 / base-content and applies the
+   system font stack so any consumer page inherits the theme.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-family: var(--font-sans);
+  line-height: var(--leading-normal);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+a { color: inherit; text-decoration: none; }
+
+:where(button, [role="button"]) { cursor: pointer; }
+
+code, pre, kbd, samp { font-family: var(--font-mono); }
+
+:focus-visible {
+  outline: 2px solid var(--color-base-content);
+  outline-offset: 2px;
+}

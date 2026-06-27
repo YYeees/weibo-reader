@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Noto+Serif+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#3a2417;}
+  *{box-sizing:border-box;}
+  .yr-scroll::-webkit-scrollbar{width:7px;}
+  .yr-scroll::-webkit-scrollbar-thumb{background:rgba(255,240,224,0.28);border-radius:5px;}
+  .yr-scroll::-webkit-scrollbar-track{background:transparent;}
+  .yr-scroll{scrollbar-width:thin;scrollbar-color:rgba(255,240,224,0.28) transparent;}
+  @keyframes yrBreathe{0%,100%{opacity:.28;}50%{opacity:.62;}}
+  @keyframes yrCardIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<div id="root" style="position:fixed; inset:0; overflow:hidden; font-family:'Noto Serif SC',serif; background:#3a2417;"></div>
+
+<script>
+(function() {
+  const data = [
+    { year: '2019', text: '谁不是在烦恼和挣扎中曲折前行呢，我如果不幸露出通透的假象，不过是因为习惯于 thinking out loud，有点啥思考都赶紧写出来，没写的那些，意思就是都还在高悬。我们人生的进步不过是从解决简单的痛苦到解决复杂的痛苦。希望朋友们别羡慕任何人的人生，尤其是我的，咱们也都尽量别展示出一种虚幻的完美人生样本。新的一年，我们都加加油，更多地允许自己展现脆弱、痛苦和愚蠢吧。' },
+    { year: '2020', text: '喜欢创作型的赚钱的工作，是有用的。对我来说，那些重复性的有商业成分的有条理的逻辑清晰的创作从来不是磨平棱角，而是磨刀。磨好刀之后，可以更深更准地砍向世界。' },
+    { year: '2021', text: '新年愿望是多做一些无人在意的事情吧，主流太无趣了，得往边缘里退一退。主流是个奖杯，拿完了就完了，但是搞创作是一辈子的事儿，眼睛一直盯着奖杯还玩啥呀' },
+    { year: '2022', text: '任何关系健康的基础都是「我有很多自己的事情要忙」。在今天这样人情繁杂的时刻，不必被任何关系牵动、捆绑，先护佑自己的心，送给朋友们。' },
+    { year: '2023', text: '书和电影现在很难带给我什么极致体验了，那些对现在的我来说都是有点降维的世界。我更喜欢感受真实的人，握手以及拥抱，尴尬或是沉默，爱别离与求不得。仍然会像年轻时那样大量地读、敏锐地感受，但那些遥远的灵魂，确实走不进我心里更深的地方了。我关心的是我能一起滑冰、打到耳光或亲吻一会儿的人类' },
+  ];
+  const reader = encodeURI('微博阅读页.html');
+
+  function isMobile() { return window.innerWidth <= 640; }
+
+  function getVals() {
+    const mobile = isMobile();
+    return {
+      leftDisplay: mobile ? 'none' : 'flex',
+      mobileHeaderDisplay: mobile ? 'flex' : 'none',
+      cardColWidth: mobile ? '100%' : 'clamp(380px,42vw,600px)',
+      cardColPad: mobile ? '2px 2px 8px' : '2px 14px 2px 2px',
+      hairlineMargin: mobile ? '14px' : '40px',
+      bgPos: mobile ? '36% 42%' : 'center 42%',
+      outerPad: mobile ? '0 18px' : '0 clamp(28px,4.5vw,76px)',
+    };
+  }
+
+  function buildCards() {
+    return data.map((d, i) => {
+      const ready = d.year === '2019';
+      return {
+        year: d.year,
+        text: d.text,
+        ready,
+        href: ready ? (reader + '?year=' + d.year) : null,
+        footerText: ready ? '进入当年微博' : '整理中，待续 ...',
+        footerColor: ready ? '#fffaf3' : 'rgba(255,244,230,0.6)',
+        cardOpacity: ready ? '1' : '0.86',
+        breatheDelay: (i * 0.9).toFixed(2) + 's',
+      };
+    });
+  }
+
+  function render() {
+    const v = getVals();
+    const cards = buildCards();
+    const root = document.getElementById('root');
+
+    root.innerHTML = `
+      <div aria-hidden="true" style="position:absolute; inset:0; background-image:url('assets/bg-room.jpg'); background-size:cover; background-position:${v.bgPos};"></div>
+      <div aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(100deg, rgba(36,20,11,0.62) 0%, rgba(36,20,11,0.34) 34%, rgba(36,20,11,0.10) 60%, rgba(36,20,11,0.30) 100%);"></div>
+
+      <div style="position:absolute; inset:0; display:flex; flex-direction:column; padding:${v.outerPad};">
+
+        <div style="height:1px; margin-top:${v.hairlineMargin}; background:linear-gradient(90deg, rgba(255,244,230,0.05), rgba(255,244,230,0.45) 12%, rgba(255,244,230,0.45) 88%, rgba(255,244,230,0.05));"></div>
+
+        <div style="display:${v.mobileHeaderDisplay}; flex-direction:column; align-items:center; padding:clamp(18px,3.5vh,30px) 0 clamp(10px,2vh,16px); text-align:center; gap:5px;">
+          <div style="font-family:'Noto Serif SC',serif; font-weight:500; font-size:20px; letter-spacing:3px; color:#fdf3e8;">二怪微博年度回顾</div>
+          <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:13.5px; letter-spacing:1px; color:rgba(253,243,232,0.58);">Created by Ye</div>
+        </div>
+
+        <div style="flex:1; min-height:0; display:flex; flex-direction:row; gap:clamp(24px,4vw,72px); padding:clamp(22px,3.2vh,40px) 0 clamp(24px,3.2vh,40px);">
+
+          <div style="flex:1; min-width:0; display:${v.leftDisplay}; flex-direction:column; justify-content:space-between; color:#fdf3e8;">
+            <div>
+              <div style="font:500 13px 'Noto Serif SC',serif; letter-spacing:5px; color:rgba(253,243,232,0.82); text-transform:uppercase;">中二怪微博年度回望</div>
+              <div style="margin-top:clamp(20px,5vh,56px); font-family:'Cormorant Garamond',serif; font-weight:500; font-size:clamp(56px,8.2vw,128px); line-height:0.92; letter-spacing:-1px; color:#fff; text-shadow:0 2px 30px rgba(20,10,4,0.35);">2019<span style="opacity:0.5;">—</span>2023</div>
+              <div style="margin-top:clamp(28px,4.5vh,56px); max-width:392px; display:flex; flex-direction:column; gap:14px;">
+                <p style="margin: 0; font-weight: 400; font-size: 13.5px; line-height: 1.7; color: #FDF3E8D1; text-wrap: pretty; text-align: justify; font-family: Noto Serif SC; width: 478px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px">2023 年10月，我开始追二怪小报童的周更，从中汲取了许多能量和看世界的新视角 … 两年多过去了，我开始好奇陈年二怪的模样，一路走来哪些变了、哪些没变，那些非同一般的言行是一脉相承，还是奇点涌现。</p>
+                <div aria-hidden="true" style="width:34px; height:1px; background:linear-gradient(90deg, rgba(253,243,232,0.45), rgba(253,243,232,0.05));"></div>
+                <p style="margin: 0; font-weight: 400; font-size: 13.5px; line-height: 1.7; color: #FDF3E8D1; text-wrap: pretty; text-align: justify; font-family: Noto Serif SC; width: 478px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px">10 年前，我渴望成为一名交互设计师，Claude Design 让梦想得以延续，于是有了这个作品。同时希望作为一份夏日陪伴，分享给大家。</p>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:clamp(15px,1.2vw,18px); color:rgba(253,243,232,0.62);">thinking out loud · 2019—2023</div>
+              <div aria-hidden="true" style="display:flex; align-items:center; gap:10px; color:rgba(253,243,232,0.40); font-size:13px; letter-spacing:2px;">
+                <span style="display:inline-block; width:30px; height:1px; background:rgba(253,243,232,0.4);"></span>
+                <span style="font-family: Georgia; font-weight: 500">Created by Ye</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="yr-scroll" id="cardCol" style="width:${v.cardColWidth}; flex-shrink:0; overflow-y:auto; padding:${v.cardColPad}; display:flex; flex-direction:column; gap:20px;">
+            ${cards.map(y => `
+              <a ${y.href ? `href="${y.href}"` : ''} class="yr-card" data-yrcard="1" style="position:relative; display:block; flex-shrink:0; border-radius:18px; overflow:hidden; text-decoration:none; border:1px solid rgba(255,238,220,0.26); background:rgba(34,18,10,0.46); box-shadow:0 14px 38px -18px rgba(20,10,4,0.7); -webkit-backdrop-filter:blur(18px) saturate(118%); backdrop-filter:blur(18px) saturate(118%); transform:translateY(0); transition:transform .42s cubic-bezier(.2,.8,.25,1), box-shadow .42s ease, background-color .42s ease, border-color .42s ease, opacity .42s ease; opacity:${y.cardOpacity}; cursor:${y.href ? 'pointer' : 'default'};">
+                <div aria-hidden="true" style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(125% 95% at 82% 0%, rgba(255,206,140,0.30), rgba(255,206,140,0) 62%); animation:yrBreathe 7s ease-in-out infinite; animation-delay:${y.breatheDelay};"></div>
+                <div style="position:relative; height:100%; display:flex; flex-direction:column; padding:24px 28px 22px;">
+                  <div style="display:flex; align-items:baseline; gap:12px; flex-shrink:0;">
+                    <div style="font-family:'Cormorant Garamond',serif; font-weight:600; font-size:46px; line-height:0.9; color:#fffaf3; letter-spacing:0.5px; text-shadow:0 1px 14px rgba(28,14,6,0.4);">${y.year}</div>
+                    <div style="font:500 11px 'Noto Serif SC',serif; letter-spacing:3px; color:rgba(255,247,236,0.7);">年初 · NEW YEAR</div>
+                  </div>
+                  <div style="height:1px; margin:15px 0 14px; background:linear-gradient(90deg, rgba(255,246,234,0.5), rgba(255,246,234,0.05)); flex-shrink:0;"></div>
+                  <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; font-weight: 300; font-size: 15px; line-height: 1.95; color: #fdf2e6; text-wrap: pretty; text-shadow: 0 1px 10px rgba(28,14,6,0.45); text-align: justify">${y.text}</div>
+                  <div style="flex-shrink:0; margin-top:14px; display:flex; align-items:center; justify-content:flex-end; gap:8px; font:500 13px 'Noto Serif SC',serif; letter-spacing:1px; color:${y.footerColor};">
+                    <span>${y.footerText}</span>
+                    ${y.ready ? '<span style="font-size:16px; line-height:1;">→</span>' : ''}
+                  </div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+
+        </div>
+      </div>
+    `;
+
+    equalizeCards();
+    setupHover();
+  }
+
+  function equalizeCards() {
+    const cards = [...document.querySelectorAll('[data-yrcard]')];
+    if (!cards.length) return;
+    cards.forEach(c => { c.style.height = 'auto'; });
+    requestAnimationFrame(() => {
+      let max = 0;
+      cards.forEach(c => { max = Math.max(max, c.offsetHeight); });
+      cards.forEach(c => { c.style.height = max + 'px'; });
+    });
+  }
+
+  function setupHover() {
+    document.querySelectorAll('.yr-card').forEach(card => {
+      if (!card.href) return;
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-6px)';
+        card.style.background = 'rgba(46,25,14,0.62)';
+        card.style.borderColor = 'rgba(255,238,220,0.55)';
+        card.style.boxShadow = '0 26px 54px -20px rgba(20,10,4,0.72)';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0)';
+        card.style.background = 'rgba(34,18,10,0.46)';
+        card.style.borderColor = 'rgba(255,238,220,0.26)';
+        card.style.boxShadow = '0 14px 38px -18px rgba(20,10,4,0.7)';
+      });
+    });
+  }
+
+  render();
+
+  let resizeT;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => {
+      render();
+    }, 80);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => equalizeCards());
+  }
+  setTimeout(() => equalizeCards(), 250);
+})();
+</script>
+</body>
+</html>

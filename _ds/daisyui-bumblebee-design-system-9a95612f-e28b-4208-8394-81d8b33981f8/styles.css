@@ -1,0 +1,18 @@
+/* ============================================================
+   daisyUI — Bumblebee Design System
+   Root entry point. Consumers link THIS file only.
+   It is an import manifest — no rules are declared inline here.
+   ============================================================ */
+
+/* --- Foundations / tokens --- */
+@import "./tokens/colors.css";
+@import "./tokens/shape.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/base.css";
+
+/* --- Component styles (plain-CSS port of daisyUI 5) --- */
+@import "./css/button.css";
+@import "./css/surfaces.css";
+@import "./css/forms.css";
+@import "./css/navigation.css";
