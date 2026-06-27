@@ -10,15 +10,15 @@
   html,body{margin:0;padding:0;height:100%;background:#16210f;}
   *{box-sizing:border-box;}
   .wb-scroll::-webkit-scrollbar{width:9px;height:9px;}
-  .wb-scroll::-webkit-scrollbar-thumb{background:oklch(72% 0.13 92);border-radius:5px;}
+  .wb-scroll::-webkit-scrollbar-thumb{background:oklch(72% 0.13 92 / 0.5);border-radius:5px;}
   .wb-scroll::-webkit-scrollbar-track{background:transparent;}
   .wb-strip::-webkit-scrollbar{height:0;}
   .wb-strip{scrollbar-width:none;}
-  .wb-scroll.mobile-sb{scrollbar-width:none;}
-  .wb-scroll.mobile-sb::-webkit-scrollbar{width:4px;height:4px;}
-  .wb-scroll.mobile-sb::-webkit-scrollbar-thumb{background:transparent;border-radius:4px;transition:background .5s ease;}
-  .wb-scroll.mobile-sb.sbon::-webkit-scrollbar-thumb{background:rgba(60,70,40,0.34);}
-  @keyframes chapterIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  .wb-scroll.mobile-sb{scrollbar-width:thin;scrollbar-color:rgba(120,110,85,0.35) transparent;}
+  .wb-scroll.mobile-sb::-webkit-scrollbar{width:5px;height:5px;}
+  .wb-scroll.mobile-sb::-webkit-scrollbar-thumb{background:rgba(120,110,85,0.22);border-radius:5px;transition:background .3s ease;}
+  .wb-scroll.mobile-sb.sbon::-webkit-scrollbar-thumb{background:rgba(120,110,85,0.55);}
+  @keyframes chapterIn{from{opacity:0;}to{opacity:1;}}
   #back-btn:hover{transform:translateY(-2px)!important;background:oklch(88% 0.14 92)!important;box-shadow:0 6px 14px -4px rgba(0,0,0,.32)!important;color:oklch(28% 0.08 60)!important;}
   #back-btn:active{transform:translateY(0)!important;box-shadow:0 2px 0 rgba(0,0,0,.12)!important;}
   #reset-btn:hover{background:oklch(96.5% 0.014 92)!important;}
@@ -51,6 +51,7 @@
   // ===== chime physics state =====
   let chimes = [], windState = null, _noise = 0, lastNow = 0, raf = null;
   let chimeStarted = false;
+  let _csbTrack = null;
 
   // ===== constants =====
   const freqs = [261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46,783.99];
@@ -66,8 +67,22 @@
 
   function isWide() { return window.innerWidth >= 760; }
 
+  function openLightbox(src) {
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
+    const img = document.createElement('img');
+    img.src = src;
+    img.style.cssText = 'max-width:92vw;max-height:92vh;object-fit:contain;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.7);';
+    ov.appendChild(img);
+    const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
+    const onKey = e => { if (e.key === 'Escape') close(); };
+    ov.addEventListener('click', close);
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(ov);
+  }
+
   function cardOpAt(i) {
-    const base = 0.95;
+    const base = 0.75;
     return Math.max(0.06, Math.min(0.95, base * opVar[i % 12]));
   }
 
@@ -252,7 +267,9 @@
     const read = document.querySelector('[data-read]');
     if (read) read.scrollTop = 0;
     const page = document.querySelector('[data-page]');
-    if (page) { page.style.animation = 'none'; void page.offsetWidth; page.style.animation = 'chapterIn .4s ease'; }
+    if (page) page.style.animation = 'none';
+    const activeChip = document.querySelector('[data-mtab][data-ctx="hkey"][data-idx="' + state.activeIdx + '"]');
+    if (activeChip) activeChip.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'center' });
   }
 
   // ===== highlightActive =====
@@ -290,9 +307,9 @@
         bgEl.style.backgroundPosition = 'center 66%';
         bgEl.style.filter = 'blur(1px) saturate(1.22) brightness(0.92)';
       } else {
-        bgEl.style.backgroundImage = "url('uploads/bali-8477.jpg')";
-        bgEl.style.backgroundPosition = 'center 40%';
-        bgEl.style.filter = 'blur(1px) saturate(1.08) brightness(1.02)';
+        bgEl.style.backgroundImage = "url('assets/bg-plant.png')";
+        bgEl.style.backgroundPosition = 'center 90%';
+        bgEl.style.filter = 'blur(1px) saturate(1.08) brightness(0.55)';
       }
     }
     document.querySelectorAll('[data-veil]').forEach(el => {
@@ -306,6 +323,7 @@
         el.style.backdropFilter = 'blur(24px) saturate(108%)';
         el.style.webkitBackdropFilter = 'blur(24px) saturate(108%)';
         el.style.border = '1px solid rgba(255,255,255,0.5)';
+        el.style.borderRadius = '15px';
         el.style.boxShadow = '0 24px 60px -30px rgba(80,55,5,.5)';
         el.style.padding = '22px 24px 30px';
         el.style.paddingLeft = '38px';
@@ -330,7 +348,7 @@
         el.style.border = '1px solid rgba(255,243,226,0.55)';
         el.style.boxShadow = '0 1px 2px rgba(0,0,0,.03), 0 14px 34px -22px rgba(70,50,10,.4)';
       } else {
-        const mop = 0.88;
+        const mop = 0.70;
         el.style.background = 'rgba(252,250,255,' + mop + ')';
         el.style.backdropFilter = 'blur(14px) saturate(1.1)';
         el.style.webkitBackdropFilter = 'blur(14px) saturate(1.1)';
@@ -340,8 +358,8 @@
     });
     document.querySelectorAll('[data-body]').forEach(el => {
       const quote = el.dataset.body === 'quote';
-      el.style.fontSize = wide ? '14.5px' : (quote ? '15px' : '16px');
-      el.style.lineHeight = wide ? (quote ? '1.78' : '1.95') : (quote ? '1.85' : '1.9');
+      el.style.fontSize = wide ? '14.5px' : (quote ? '14px' : '15px');
+      el.style.lineHeight = wide ? (quote ? '1.78' : '1.95') : (quote ? '1.6' : '1.6');
       el.style.fontFamily = wide ? 'Georgia' : "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif";
       el.style.letterSpacing = wide ? '' : '0.2px';
     });
@@ -400,9 +418,9 @@
         ${p.hasRepost ? `
         <div style="margin-top:12px; padding:12px 14px; background:rgba(255,251,242,0.42); border-radius:12px; border-left:4px solid oklch(75% 0.183 55.934 / 0.7);">
           <div data-body="quote" style="font-size:14.5px; line-height:1.78; color:oklch(40% 0.02 60); white-space:pre-wrap; text-wrap:pretty; font-family:Georgia">${esc(p.repostText)}</div>
-          ${p.repostHasImg ? `<div style="display:grid; grid-template-columns:repeat(${p.repostCols},1fr); gap:6px; margin-top:10px; max-width:400px;">${p.repostImages.map(im=>`<img src="${esc(im)}" loading="lazy" decoding="async" alt="" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; background:oklch(92% 0.01 92);">`).join('')}</div>` : ''}
+          ${p.repostHasImg ? `<div style="display:grid; grid-template-columns:repeat(${p.repostCols},1fr); gap:5px; margin:10px auto 0; max-width:min(420px,calc(100% - 8px));">${p.repostImages.map(im=>`<img src="${esc(im)}" loading="lazy" decoding="async" data-lb="${esc(im)}" alt="" style="width:100%; aspect-ratio:${p.repostCols===1?'4/3':'1'}; object-fit:cover; border-radius:7px; background:oklch(92% 0.01 92); cursor:zoom-in;">`).join('')}</div>` : ''}
         </div>` : ''}
-        ${p.hasImg ? `<div style="display:grid; grid-template-columns:repeat(${p.cols},1fr); gap:6px; margin-top:12px; max-width:440px;">${p.images.map(im=>`<img src="${esc(im)}" loading="lazy" decoding="async" alt="" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; background:oklch(92% 0.01 92);">`).join('')}</div>` : ''}
+        ${p.hasImg ? `<div style="display:grid; grid-template-columns:repeat(${p.cols},1fr); gap:5px; margin:12px auto 0; max-width:min(460px,calc(100% - 8px));">${p.images.map(im=>`<img src="${esc(im)}" loading="lazy" decoding="async" data-lb="${esc(im)}" alt="" style="width:100%; aspect-ratio:${p.cols===1?'4/3':'1'}; object-fit:cover; border-radius:9px; background:oklch(92% 0.01 92); cursor:zoom-in;">`).join('')}</div>` : ''}
       </div>`).join('');
   }
 
@@ -431,7 +449,7 @@
       <!-- left piano column (wide only) -->
       <div style="display:${wide?'flex':'none'}; width:220px; flex-shrink:0; flex-direction:column; align-items:stretch; padding:18px 0 18px 16px; position:relative; background:transparent; padding-right:10px; height:740px;">
         <div style="display:flex; align-items:center; gap:10px; padding-right:8px;">
-          <div id="back-btn" title="返回年份选择首页" style="cursor:pointer; width:38px; height:38px; border-radius:50%; background:#fff; box-shadow:0 3px 0 rgba(0,0,0,.12); display:flex; align-items:center; justify-content:center; font-size:17px; color:oklch(35% 0.05 60); transition:transform .18s cubic-bezier(0,0,.2,1), background-color .18s ease, box-shadow .18s ease, color .18s ease;">↩</div>
+          <div id="back-btn" title="返回年份选择首页" style="cursor:pointer; width:46px; height:46px; border-radius:50%; background:#fff; box-shadow:0 3px 0 rgba(0,0,0,.12); display:flex; align-items:center; justify-content:center; font-size:21px; color:oklch(35% 0.05 60); transition:transform .18s cubic-bezier(0,0,.2,1), background-color .18s ease, box-shadow .18s ease, color .18s ease;">↩</div>
         </div>
         <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin:14px 0 6px; transform:translateX(45px);">
           <div style="font:700 44px 'Caveat',cursive; color:oklch(96% 0.045 92); line-height:1; text-shadow:0 1px 1px rgba(0,0,0,.45), 0 2px 10px rgba(35,22,4,.5);">${year}</div>
@@ -454,9 +472,9 @@
       <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
 
         <!-- mobile top bar -->
-        <div style="display:${wide?'none':'flex'}; flex-shrink:0; align-items:center; gap:10px; padding:0 14px; height:54px; background:linear-gradient(180deg, rgba(220,215,230,0.72), rgba(210,208,222,0.55)); -webkit-backdrop-filter:blur(20px) saturate(1.15); backdrop-filter:blur(20px) saturate(1.15);">
-          <div id="mobile-back" style="cursor:pointer; display:flex; align-items:center; gap:4px; padding:3px 12px 6px; border-radius:7px; background:rgba(255,255,255,0.38); border:0; flex-shrink:0; transition:background .15s ease;">
-            <span style="font-size:15px; line-height:1; color:oklch(28% 0.04 290); font-weight:700; font-family:Verdana">⟨</span>
+        <div style="display:${wide?'none':'flex'}; flex-shrink:0; align-items:center; gap:10px; padding:0 14px; height:54px; background:linear-gradient(180deg, rgba(220,215,230,0.60), rgba(210,208,222,0.55)); -webkit-backdrop-filter:blur(20px) saturate(1.15); ">
+          <div id="mobile-back" style="cursor:pointer; display:flex; align-items:center; gap:4px; padding:5px 16px 8px; border-radius:9px; background:rgba(255,255,255,0.38); border:0; flex-shrink:0; transition:background .15s ease;">
+            <span style="font-size:19px; line-height:1; color:oklch(28% 0.04 290); font-weight:700; font-family:Verdana">⟨</span>
           </div>
           <div style="display:flex; align-items:center; margin:0 auto;">
             <div style="font:700 28px Georgia; color:oklch(41% 0.112 45.904); line-height:1;">${year}</div>
@@ -465,7 +483,7 @@
         </div>
 
         <!-- mobile month chips -->
-        <div class="wb-strip" style="display:${wide?'none':'flex'}; flex-shrink:0; gap:4px; overflow-x:auto; padding:10px 14px 10px; -webkit-backdrop-filter:blur(20px) saturate(1.15); backdrop-filter:blur(20px) saturate(1.15);">
+        <div class="wb-strip" style="display:${wide?'none':'flex'}; flex-shrink:0; gap:4px; overflow-x:auto; padding:10px 14px 10px; -webkit-backdrop-filter:blur(20px) saturate(1.15); ">
           ${tabs.map(m => `
           <div data-mtab="1" data-ctx="hkey" data-idx="${m.idx}" data-has="${m.hasData}" data-freq="${m.freq}" style="flex-shrink:0; width:80px; height:45px; background:rgba(255,255,255,0.88); color:oklch(31% 0.105 44); border:1px solid rgba(255,255,255,0.6); border-radius:12px; box-shadow:0 3px 9px -5px rgba(40,30,60,.22); display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; transition:background .15s ease, color .15s ease, border-color .15s ease, opacity .15s ease, box-shadow .15s ease;">
             <div style="font:700 20px 'Cormorant Garamond',serif; letter-spacing:2px; line-height:1; color:inherit;">${m.en}</div>
@@ -482,10 +500,10 @@
           <div data-page="1" data-layer="panel" style="max-width:800px; margin:0 auto; min-height:calc(100% - 2px);">
 
             <div data-layer="card" style="display:flex; align-items:center; gap:13px; border-radius:15px; padding:15px 18px; margin-bottom:14px; width:100%; max-width:720px; margin-top:8px;">
-              <img src="assets/weibo/img/avatar.webp" alt="" style="width:46px; height:46px; border-radius:50%; object-fit:cover;">
+              <img src="${esc(state.data.user.avatar)}" alt="" style="width:46px; height:46px; border-radius:50%; object-fit:cover;">
               <div style="flex:1;">
-                <div style="font-size:17px; font-weight:700; color:oklch(20% 0.02 60); font-family:Georgia">中二怪</div>
-                <div style="font-size:12px; color:oklch(50% 0.02 60); font-family:Georgia">Made of sterner stuff</div>
+                <div style="font-size:17px; font-weight:700; color:oklch(20% 0.02 60); font-family:Georgia">${esc(state.data.user.screen_name)}</div>
+                <div style="font-size:12px; color:oklch(50% 0.02 60); font-family:Georgia">${esc(state.data.user.description)}</div>
               </div>
               <div style="display:flex; align-items:baseline; gap:7px; padding:7px 14px; background:oklch(96.5% 0.013 92); border-radius:12px;">
                 <span style="font:700 17px Georgia; color:oklch(28% 0.03 60);">${monthCn}</span>
@@ -516,6 +534,9 @@
     if (mobileBack) mobileBack.addEventListener('click', goBack);
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) resetBtn.addEventListener('click', resetTheme);
+    document.querySelectorAll('[data-lb]').forEach(img => {
+      img.addEventListener('click', () => openLightbox(img.dataset.lb));
+    });
 
     const readEl = document.querySelector('[data-read]');
     if (readEl) {
@@ -525,6 +546,33 @@
         clearTimeout(sbT);
         sbT = setTimeout(() => readEl.classList.remove('sbon'), 650);
       }, { passive: true });
+    }
+
+    // custom scrollbar for mobile (CSS scrollbar doesn't work on iOS Safari)
+    if (_csbTrack) { _csbTrack.remove(); _csbTrack = null; }
+    if (!wide && readEl) {
+      const track = document.createElement('div');
+      track.style.cssText = 'position:fixed;right:2px;width:4px;z-index:200;pointer-events:none;border-radius:3px;';
+      const thumb = document.createElement('div');
+      thumb.style.cssText = 'position:absolute;left:0;right:0;border-radius:3px;background:rgba(100,88,65,0.75);';
+      track.appendChild(thumb);
+      document.body.appendChild(track);
+      _csbTrack = track;
+      const updateCSB = () => {
+        const rect = readEl.getBoundingClientRect();
+        track.style.top = (rect.top + 4) + 'px';
+        track.style.height = (rect.height - 8) + 'px';
+        const trackH = rect.height - 8;
+        const ratio = readEl.clientHeight / readEl.scrollHeight;
+        track.style.display = ratio >= 1 ? 'none' : 'block';
+        const thumbH = Math.max(44, ratio * trackH);
+        const maxTop = trackH - thumbH;
+        const prog = readEl.scrollHeight > readEl.clientHeight ? readEl.scrollTop / (readEl.scrollHeight - readEl.clientHeight) : 0;
+        thumb.style.height = thumbH + 'px';
+        thumb.style.top = (prog * maxTop) + 'px';
+      };
+      readEl.addEventListener('scroll', updateCSB, { passive: true });
+      updateCSB();
     }
 
     applyTheme();
