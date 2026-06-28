@@ -43,6 +43,8 @@
       hairlineMargin: mobile ? '14px' : '40px',
       bgPos: mobile ? '36% 42%' : 'center 42%',
       outerPad: mobile ? '0 18px' : '0 clamp(28px,4.5vw,76px)',
+      cardTextSize: mobile ? '15.5px' : '15px',
+      cardFooterSize: mobile ? '13.5px' : '13px',
     };
   }
 
@@ -111,8 +113,8 @@
                     <div style="font:500 11px 'Noto Serif SC',serif; letter-spacing:3px; color:rgba(255,247,236,0.7);">年初 · NEW YEAR</div>
                   </div>
                   <div style="height:1px; margin:15px 0 14px; background:linear-gradient(90deg, rgba(255,246,234,0.5), rgba(255,246,234,0.05)); flex-shrink:0;"></div>
-                  <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; font-weight: 300; font-size: 15px; line-height: 1.95; color: #fdf2e6; text-wrap: pretty; text-shadow: 0 1px 10px rgba(28,14,6,0.45); text-align: justify">${y.text}</div>
-                  <div style="flex-shrink:0; margin-top:14px; display:flex; align-items:center; justify-content:flex-end; gap:8px; font:500 13px 'Noto Serif SC',serif; letter-spacing:1px; color:${y.footerColor};">
+                  <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; font-weight: 300; font-size: ${v.cardTextSize}; line-height: 1.95; color: #fdf2e6; text-wrap: pretty; text-shadow: 0 1px 10px rgba(28,14,6,0.45); text-align: justify">${y.text}</div>
+                  <div style="flex-shrink:0; margin-top:14px; display:flex; align-items:center; justify-content:flex-end; gap:8px; font:500 ${v.cardFooterSize} 'Noto Serif SC',serif; letter-spacing:1px; color:${y.footerColor};">
                     <span>${y.footerText}</span>
                     ${y.ready ? '<span style="font-size:16px; line-height:1;">→</span>' : ''}
                   </div>
