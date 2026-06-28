@@ -358,9 +358,9 @@
     });
     document.querySelectorAll('[data-body]').forEach(el => {
       const quote = el.dataset.body === 'quote';
-      el.style.fontSize = wide ? '14.5px' : (quote ? '14px' : '15px');
+      el.style.fontSize = wide ? '16px' : (quote ? '16px' : '16.5px');
       el.style.lineHeight = wide ? (quote ? '1.78' : '1.95') : (quote ? '1.6' : '1.6');
-      el.style.fontFamily = wide ? 'Georgia' : "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif";
+      el.style.fontFamily = wide ? 'PingFang SC' : "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif";
       el.style.letterSpacing = wide ? '' : '0.2px';
     });
     document.querySelectorAll('[data-ctx="hkey"]').forEach((el, i) => {
