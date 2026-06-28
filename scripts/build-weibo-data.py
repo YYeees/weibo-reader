@@ -81,40 +81,43 @@ def main() -> int:
     user = src["user"]
     img_index = build_img_index(IMG_DIR)
 
-    posts = [convert_post(w, img_index) for w in src["weibo"]]
-    posts.sort(key=lambda p: p["dt"])
-
-    months = sorted({p["ym"] for p in posts})
-    year = int(months[0].split("-")[0]) if months else 2019
+    all_posts = [convert_post(w, img_index) for w in src["weibo"]]
+    all_posts.sort(key=lambda p: p["dt"])
 
     avatar = f"{IMG_PREFIX}/avatar.webp"
     if not (IMG_DIR / "avatar.webp").is_file():
         avatar = user.get("avatar_hd") or user.get("profile_image_url") or ""
 
-    out = {
-        "user": {
-            "screen_name": user.get("screen_name", ""),
-            "description": user.get("description", ""),
-            "avatar": avatar,
-            "followers_count": user.get("followers_count", 0),
-            "follow_count": user.get("follow_count", 0),
-            "statuses_count": user.get("statuses_count", 0),
-        },
-        "year": year,
-        "months": months,
-        "posts": posts,
+    user_info = {
+        "screen_name": user.get("screen_name", ""),
+        "description": user.get("description", ""),
+        "avatar": avatar,
+        "followers_count": user.get("followers_count", 0),
+        "follow_count": user.get("follow_count", 0),
+        "statuses_count": user.get("statuses_count", 0),
     }
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = OUT_DIR / f"weibo-{year}.json"
-    out_path.write_text(
-        json.dumps(out, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
+    by_year: dict[int, list] = defaultdict(list)
+    for p in all_posts:
+        by_year[int(p["dt"][:4])].append(p)
 
-    with_img = sum(1 for p in posts if p["images"] or (p["repost"] and p["repost"]["images"]))
-    print(f"Wrote {out_path}")
-    print(f"  posts: {len(posts)}, months: {len(months)}, with images: {with_img}")
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    for year, posts in sorted(by_year.items()):
+        months = sorted({p["ym"] for p in posts})
+        out = {
+            "user": user_info,
+            "year": year,
+            "months": months,
+            "posts": posts,
+        }
+        out_path = OUT_DIR / f"weibo-{year}.json"
+        out_path.write_text(
+            json.dumps(out, ensure_ascii=False, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        with_img = sum(1 for p in posts if p["images"] or (p["repost"] and p["repost"]["images"]))
+        print(f"Wrote {out_path}")
+        print(f"  posts: {len(posts)}, months: {len(months)}, with images: {with_img}")
     return 0
 
 

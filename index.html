@@ -48,7 +48,7 @@
 
   function buildCards() {
     return data.map((d, i) => {
-      const ready = d.year === '2019';
+      const ready = d.year === '2019' || d.year === '2020';
       return {
         year: d.year,
         text: d.text,
