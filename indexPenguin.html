@@ -365,6 +365,9 @@
             <div style="position:absolute;left:0;top:0;width:100%;height:${L.kbH}px;pointer-events:none;">
               ${blackHTML}
             </div>
+            ${L.portrait
+              ? `<div aria-hidden="true" style="position:absolute;right:${Math.max(2,Math.round(L.whiteW*0.08))}px;top:${Math.round(L.kbH*0.38)}px;transform:rotate(91.5deg);transform-origin:top right;font-family:'Caveat',cursive;font-weight:600;font-size:${Math.max(8,Math.round(L.whiteW*0.25))}px;line-height:1;letter-spacing:.6px;color:rgba(95,68,28,0.26);pointer-events:none;user-select:none;z-index:6;white-space:nowrap;">created by Ye</div>`
+              : ''}
             ${L.portrait ? '' : `<div style="position:absolute;left:${L.penguinLeft}px;top:${L.penguinTop}px;width:${L.penguinW}px;height:${L.penguinH}px;z-index:80;pointer-events:none;will-change:transform;">
               <img data-penguin="" src="penguin2-cut.png" alt="" draggable="false"
                 style="width:95%;object-fit:contain;transform:translateY(0);filter:drop-shadow(0 5px 6px rgba(0,0,0,.16));position:relative;left:38px;top:0px;height:100%">
