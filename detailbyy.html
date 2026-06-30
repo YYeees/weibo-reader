@@ -480,11 +480,11 @@
       <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
 
         <!-- mobile top bar -->
-        <div style="display:${wide?'none':'flex'}; flex-shrink:0; align-items:center; gap:10px; padding:0 14px; height:54px; background:linear-gradient(180deg, rgba(220,215,230,0.60), rgba(210,208,222,0.55)); -webkit-backdrop-filter:blur(20px) saturate(1.15); ">
+        <div style="display:${wide?'none':'flex'}; position:relative; flex-shrink:0; align-items:center; gap:10px; padding:0 14px; height:54px; background:linear-gradient(180deg, rgba(220,215,230,0.60), rgba(210,208,222,0.55)); -webkit-backdrop-filter:blur(20px) saturate(1.15); ">
           <div id="mobile-back" style="cursor:pointer; display:flex; align-items:center; gap:4px; padding:5px 16px 8px; border-radius:9px; background:rgba(255,255,255,0.38); border:0; flex-shrink:0; transition:background .15s ease;">
             <span style="font-size:19px; line-height:1; color:oklch(28% 0.04 290); font-weight:700; font-family:Verdana">⟨</span>
           </div>
-          <div style="display:flex; align-items:center; margin:0 auto;">
+          <div style="position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center;">
             <div style="font:700 28px Georgia; color:oklch(41% 0.112 45.904); line-height:1;">${year}</div>
           </div>
         </div>

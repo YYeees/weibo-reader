@@ -117,7 +117,7 @@
     const lo = Math.log2(120), hi = Math.log2(1000);
     const tt = Math.max(0, Math.min(1, (Math.log2(freq) - lo) / (hi - lo)));
     const x = window.innerWidth * (0.18 + tt * 0.64);
-    const burst = Math.round((5 + snowIntensity * 16) * (isMobile() ? 0.7 : 1));
+    const burst = Math.round((5 + snowIntensity * 16) * (isMobile() ? 0.6 : 1));
     for (let i = 0; i < burst; i++) spawnFlake(x, snowIntensity);
   }
 
@@ -147,7 +147,7 @@
     const dt = Math.min(0.05, (t - lastFrame) / 1000);
     lastFrame = t;
     snowIntensity = Math.max(0, snowIntensity - dt * 0.32);
-    emitAcc += snowIntensity * dt * 60;
+    emitAcc += snowIntensity * dt * 60 * (isMobile() ? 0.7 : 1);
     while (emitAcc >= 1) { emitAcc -= 1; spawnFlake(null, snowIntensity); }
     cx.clearRect(0, 0, SW, SH);
     for (let i = flakes.length - 1; i >= 0; i--) {
@@ -172,15 +172,22 @@
   requestAnimationFrame(stepSnow);
 
   // ---- penguin jump ----
+  let portraitJumpMax = 0, curPortrait = false;
   function jumpPenguin(freq) {
     const el = document.querySelector('[data-penguin]');
     if (!el) return;
     const lo = Math.log2(120), hi = Math.log2(1000);
     const t = Math.max(0, Math.min(1, (Math.log2(freq) - lo) / (hi - lo)));
-    let h = Math.round(8 + t * t * 100);
-    const rect = el.getBoundingClientRect();
-    const headroom = Math.max(8, rect.top - 6);
-    h = Math.min(h, headroom);
+    let h;
+    if (curPortrait) {
+      // straight-up hop; apex scales with pitch and tops out at the Sol key
+      h = Math.max(6, Math.round(portraitJumpMax * 2.0 *  t * t));
+    } else {
+      h = Math.round(8 + t * t * 100);
+      const rect = el.getBoundingClientRect();
+      const headroom = Math.max(8, rect.top - 6);
+      h = Math.min(h, headroom);
+    }
     const squash = 0.05 + t * 0.06;
     try { if (el._anim) el._anim.cancel(); } catch (e) {}
     el._anim = el.animate([
@@ -282,6 +289,7 @@
       whiteKeysHTML += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:${L.yearGap}px;">
         <div
           data-key="white"
+          ${i === 13 ? 'id="sol-key"' : ''}
           data-freq="${freq}"
           data-base="#ffffff"
           data-hit="oklch(85% 0.199 91.936)"
@@ -324,35 +332,92 @@
     // portrait phrase — same row as landscape but rotated -90deg into the left sidebar
     const sidebarW = Math.max(1, Math.round(L.w / 2 - L.kbH / 2));
     const phrasePortraitHTML = L.portrait ? `
-      <div style="position:absolute;left:0;top:0;width:${sidebarW}px;height:100%;display:flex;align-items:flex-start;padding-top:650px;justify-content:center;pointer-events:none;">
+      <div id="phrase-portrait" style="position:absolute;left:0;top:0;width:${sidebarW}px;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none;">
         <div style="transform:rotate(-90deg);display:flex;align-items:center;gap:14px;pointer-events:auto;">
           <div id="reading-time-btn" style="${btnStyle}">Alt-Tab</div>
-          <div style="font-weight:400;font-size:${Math.round(L.yearFont*0.6)}px;line-height:1.25;color:#000;letter-spacing:.3px;font-family:'Georgia';white-space:nowrap;"> ... yo yo yo yo ~~ ❤️</div>
+          <div id="yoyo-text" style="font-weight:400;font-size:${Math.round(L.yearFont*0.6)}px;line-height:1.25;color:#000;letter-spacing:.3px;font-family:'Georgia';white-space:nowrap;"> ... yo yo yo yo ~~</div>
         </div>
+      </div>` : '';
+
+    // portrait penguin + heart — rendered upright (screen coords) in the left
+    // column: a small ❤️ sits directly above the "yo yo ~~" text, with the penguin
+    // standing on it. Final position + heart size are set in JS after layout
+    // (see the L.portrait block below). On key press the penguin hops straight up
+    // (see jumpPenguin), the loudest note peaking at the Sol key (#sol-key).
+    const pPenguinW = Math.round(L.whiteW * 1.2);
+    const pPenguinH = Math.round(pPenguinW / 0.965);
+    const pHeart = Math.round(L.whiteW * 0.6);
+    const penguinPortraitHTML = L.portrait ? `
+      <div id="penguin-portrait" style="position:absolute;left:0;bottom:0;visibility:hidden;display:flex;flex-direction:column;align-items:center;pointer-events:none;z-index:80;">
+        <img data-penguin="" src="penguin2-cut.png" alt="" draggable="false"
+          style="width:${pPenguinW}px;height:${pPenguinH}px;object-fit:contain;filter:drop-shadow(0 5px 6px rgba(0,0,0,.16));transform:translateY(0);will-change:transform;">
+        <div id="portrait-heart" style="font-size:${pHeart}px;line-height:1;margin-top:${-Math.round(pHeart * 0.42)}px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.18));">❤️</div>
       </div>` : '';
 
     root.innerHTML = `
       <div style="position:absolute;left:50%;top:50%;width:${L.logicalW}px;height:${L.logicalH}px;transform:${L.stageTransform};transform-origin:center center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="width:${L.kbW}px;display:flex;flex-direction:column;align-items:stretch;transform:translateY(${L.contentShift}px);">
           ${phraseHTML}
-          <div style="position:relative;width:100%;height:${L.kbH}px;">
+          <div id="kb-rel" style="position:relative;width:100%;height:${L.kbH}px;">
             <div style="display:flex;gap:${L.gap}px;width:100%;height:100%;align-items:flex-start;">
               ${whiteKeysHTML}
             </div>
             <div style="position:absolute;left:0;top:0;width:100%;height:${L.kbH}px;pointer-events:none;">
               ${blackHTML}
             </div>
-            <div style="position:absolute;left:${L.penguinLeft}px;top:${L.penguinTop}px;width:${L.penguinW}px;height:${L.penguinH}px;z-index:80;pointer-events:none;will-change:transform;">
+            ${L.portrait ? '' : `<div style="position:absolute;left:${L.penguinLeft}px;top:${L.penguinTop}px;width:${L.penguinW}px;height:${L.penguinH}px;z-index:80;pointer-events:none;will-change:transform;">
               <img data-penguin="" src="penguin2-cut.png" alt="" draggable="false"
                 style="width:95%;object-fit:contain;transform:translateY(0);filter:drop-shadow(0 5px 6px rgba(0,0,0,.16));position:relative;left:38px;top:0px;height:100%">
-            </div>
+            </div>`}
           </div>
         </div>
       </div>
       ${phrasePortraitHTML}
+      ${penguinPortraitHTML}
     `;
 
     bindKeys();
+
+    // portrait: drop the bottom-left button/text down so the button's bottom
+    // lines up with the bottom of the piano. The sidebar group is rotated -90deg
+    // about its centre, so measure post-transform rects and shift the container.
+    if (L.portrait) {
+      const cont = document.getElementById('phrase-portrait');
+      const btn = document.getElementById('reading-time-btn');
+      const kb = document.getElementById('kb-rel');
+      if (cont && btn && kb) {
+        const delta = kb.getBoundingClientRect().bottom - btn.getBoundingClientRect().bottom;
+        cont.style.top = delta + 'px';
+      }
+
+      // place the penguin + heart in the left column: heart sized a touch
+      // narrower than the (rotated) Alt-Tab button, sitting directly above the
+      // "yo yo ~~" text, with the penguin standing on top of the heart.
+      const grp = document.getElementById('penguin-portrait');
+      const yoyo = document.getElementById('yoyo-text');
+      const heart = document.getElementById('portrait-heart');
+      if (grp && yoyo && btn && heart) {
+        const heartPx = Math.max(16, Math.round(btn.getBoundingClientRect().width * 0.8));
+        heart.style.fontSize = heartPx + 'px';
+        heart.style.marginTop = (Math.round(heartPx * 0.25)) + 'px';
+        const yr = yoyo.getBoundingClientRect();
+        grp.style.left = Math.round(yr.left + yr.width / 2) + 'px';
+        grp.style.transform = 'translateX(-50%)';
+        grp.style.bottom = Math.round(L.h - yr.top + Math.round(L.h * 0.012)) + 'px';
+        grp.style.visibility = 'visible';
+      }
+
+      // max jump = distance from the resting penguin centre up to the Sol key
+      // centre, so the loudest note's apex lands the penguin on the Sol key.
+      const pe = document.querySelector('[data-penguin]');
+      const sol = document.getElementById('sol-key');
+      if (pe && sol) {
+        const pr = pe.getBoundingClientRect();
+        const sr = sol.getBoundingClientRect();
+        portraitJumpMax = Math.max(0, (pr.top + pr.height / 2) - (sr.top + sr.height / 2));
+      }
+    }
+    curPortrait = L.portrait;
   }
 
   // ---- key interaction ----
