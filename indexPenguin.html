@@ -279,10 +279,16 @@
 
     // white keys with solfège labels inside the same column flex cell
     let whiteKeysHTML = '';
+    // web-only signature: one word near the bottom edge of the left 3 white keys,
+    // matching the mobile signature's font & colour.
+    const sigWords = ['created', 'by', 'ye'];
     for (let i = 0; i < 14; i++) {
       const freq = whiteFreqs[i] * L.octave;
       const note = i % 2 === 1 ? L.solfegeList[i] : '';
       const rot = whiteRot[i];
+      const keyWordHTML = (!L.portrait && i >= 11)
+        ? `<div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:${Math.max(2,Math.round(L.kbH*0.025))}px;text-align:center;font-family:'Caveat',cursive;font-weight:600;font-size:${Math.max(10,Math.round(L.whiteW*0.28))}px;line-height:1;letter-spacing:.6px;color:rgba(95,68,28,0.26);pointer-events:none;user-select:none;white-space:nowrap;">${sigWords[i - 11]}</div>`
+        : '';
       const noteLabelHTML = note
         ? `<div style="height:${L.yearFont}px;font-family:'Caveat',cursive;font-weight:600;font-size:${Math.round(L.yearFont*0.82)}px;line-height:${L.yearFont}px;color:#000;rotate:${rot};transform:${L.portrait ? 'rotate(90deg)' : 'none'}">${note}</div>`
         : `<div style="height:${L.yearFont}px;"></div>`;
@@ -296,7 +302,8 @@
           data-press="${L.pressPx}"
           data-bshadow="${L.wBshadow}"
           data-hshadow="${L.wHshadow}"
-          style="width:100%;height:${L.kbH}px;background:#ffffff;border-radius:${L.wRadius}px;rotate:${rot};cursor:pointer;touch-action:none;box-shadow:${L.wBshadow};transform:translateY(0);will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden;">
+          style="position:relative;width:100%;height:${L.kbH}px;background:#ffffff;border-radius:${L.wRadius}px;rotate:${rot};cursor:pointer;touch-action:none;box-shadow:${L.wBshadow};transform:translateY(0);will-change:transform;-webkit-backface-visibility:hidden;backface-visibility:hidden;">
+          ${keyWordHTML}
         </div>
         ${noteLabelHTML}
       </div>`;
