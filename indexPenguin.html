@@ -105,7 +105,7 @@
       rot: Math.random() * Math.PI, spin: (Math.random() - 0.5) * 1.4,
       hex: Math.random() < 0.4,
     });
-    if (flakes.length > (mob ? 364 : 520)) flakes.shift();
+    if (flakes.length > (mob ? 243 : 520)) flakes.shift();
   }
 
   function burstSnow(freq) {
@@ -117,7 +117,7 @@
     const lo = Math.log2(120), hi = Math.log2(1000);
     const tt = Math.max(0, Math.min(1, (Math.log2(freq) - lo) / (hi - lo)));
     const x = window.innerWidth * (0.18 + tt * 0.64);
-    const burst = Math.round((5 + snowIntensity * 16) * (isMobile() ? 0.6 : 1));
+    const burst = Math.round((5 + snowIntensity * 16) * (isMobile() ? 0.4 : 1));
     for (let i = 0; i < burst; i++) spawnFlake(x, snowIntensity);
   }
 
@@ -147,7 +147,7 @@
     const dt = Math.min(0.05, (t - lastFrame) / 1000);
     lastFrame = t;
     snowIntensity = Math.max(0, snowIntensity - dt * 0.32);
-    emitAcc += snowIntensity * dt * 60 * (isMobile() ? 0.7 : 1);
+    emitAcc += snowIntensity * dt * 60 * (isMobile() ? 0.47 : 1);
     while (emitAcc >= 1) { emitAcc -= 1; spawnFlake(null, snowIntensity); }
     cx.clearRect(0, 0, SW, SH);
     for (let i = flakes.length - 1; i >= 0; i--) {
