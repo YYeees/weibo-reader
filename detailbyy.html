@@ -26,8 +26,8 @@
   #play-time-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important; }
   #mobile-alttab-btn { transition: background .15s ease, color .15s ease, border-color .15s ease, opacity .15s ease, box-shadow .15s ease; }
   #mobile-alttab-btn:active { opacity:.75; }
-  #mobile-back:hover{background:rgba(255,255,255,0.6)!important;}
-  #mobile-back:active{background:rgba(255,255,255,0.28)!important;}
+  #mobile-back:hover{opacity:.9!important;}
+  #mobile-back:active{opacity:.45!important; transform:scale(.9);}
 
 </style>
 </head>
@@ -82,6 +82,22 @@
     const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
     const onKey = e => { if (e.key === 'Escape') close(); };
     ov.addEventListener('click', close);
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(ov);
+  }
+
+  // reward (赞赏码) modal
+  function openReward() {
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(22,16,4,0.82);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out;';
+    const card = document.createElement('div');
+    card.style.cssText = 'cursor:default;background:#fff;border-radius:22px;padding:26px 26px 22px;box-shadow:0 30px 80px rgba(0,0,0,.5);max-width:320px;width:100%;text-align:center;';
+    card.innerHTML = '<div style="font:400 16px \'Georgia\';color:oklch(30% 0.06 60);line-height:1.5;margin:14px 0 8px;">如果你恰好喜欢，请我喝咖啡吧</div>'
+      + '<img src="assets/reward-qr.png" alt="赞赏码" style="width:100%;max-width:250px;border-radius:8px;display:block;margin:0 auto;">';
+    ov.appendChild(card);
+    const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
+    const onKey = e => { if (e.key === 'Escape') close(); };
+    ov.addEventListener('click', e => { if (e.target === ov) close(); });
     document.addEventListener('keydown', onKey);
     document.body.appendChild(ov);
   }
@@ -448,14 +464,14 @@
 
 
       <!-- left piano column (wide only) -->
-      <div style="display:${wide?'flex':'none'}; width:220px; flex-shrink:0; flex-direction:column; align-items:stretch; padding:18px 0 18px 16px; position:relative; background:transparent; padding-right:10px; height:798px;">
+      <div style="display:${wide?'flex':'none'}; width:220px; flex-shrink:0; flex-direction:column; align-items:stretch; padding:18px 0 18px 16px; position:relative; background:transparent; padding-right:10px; height:100%; max-height:100%;">
         <div style="display:flex; align-items:center; gap:10px; padding-right:8px;">
           <div id="back-btn" title="返回年份选择首页" style="cursor:pointer; width:46px; height:46px; border-radius:50%; background:#fff; box-shadow:0 3px 0 rgba(0,0,0,.12); display:flex; align-items:center; justify-content:center; font-size:21px; color:oklch(35% 0.05 60); transition:transform .18s cubic-bezier(0,0,.2,1), background-color .18s ease, box-shadow .18s ease, color .18s ease;">↩</div>
         </div>
         <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin:14px 0 6px; transform:translateX(45px);">
           <div style="font:700 44px 'Caveat',cursive; color:oklch(96% 0.045 92); line-height:1; text-shadow:0 1px 1px rgba(0,0,0,.45), 0 2px 10px rgba(35,22,4,.5);">${year}</div>
         </div>
-        <div class="wb-strip" style="position:relative; height:594px; flex-shrink:0; overflow:visible; display:flex; flex-direction:column; padding:4px 8px 8px;">
+        <div class="wb-strip" style="position:relative; flex:1 1 auto; min-height:0; max-height:594px; overflow:visible; display:flex; flex-direction:column; padding:4px 8px 8px;">
           <div aria-hidden="true" style="position:absolute; left:calc(50% + 45px); top:4px; width:150px; transform:translateX(-50%); height:1px; background:linear-gradient(90deg, transparent, rgba(255,247,232,0.5) 20%, rgba(255,247,232,0.5) 80%, transparent); z-index:1;"></div>
           ${tabs.map(m => `
           <div style="position:relative; flex:1; min-height:0; z-index:2;">
@@ -481,11 +497,16 @@
 
         <!-- mobile top bar -->
         <div style="display:${wide?'none':'flex'}; position:relative; flex-shrink:0; align-items:center; gap:10px; padding:0 14px; height:54px; background:linear-gradient(180deg, rgba(220,215,230,0.60), rgba(210,208,222,0.55)); -webkit-backdrop-filter:blur(20px) saturate(1.15); ">
-          <div id="mobile-back" style="cursor:pointer; display:flex; align-items:center; gap:4px; padding:5px 16px 8px; border-radius:9px; background:rgba(255,255,255,0.38); border:0; flex-shrink:0; transition:background .15s ease;">
-            <span style="font-size:19px; line-height:1; color:oklch(28% 0.04 290); font-weight:700; font-family:Verdana">⟨</span>
+          <div id="mobile-back" title="返回" style="cursor:pointer; flex-shrink:0; opacity:.6; display:flex; align-items:center; justify-content:center; width:46px; height:46px; transition:transform .15s ease, opacity .15s ease;">
+            <svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 1.3px rgba(60,40,5,.32));">
+              <path d="M14.5 6 8.5 12l6 6"/>
+            </svg>
           </div>
           <div style="position:absolute; left:50%; transform:translateX(-50%); display:flex; align-items:center;">
             <div style="font:700 28px Georgia; color:oklch(41% 0.112 45.904); line-height:1;">${year}</div>
+          </div>
+          <div data-coffee="1" title="请我喝杯咖啡" role="button" tabindex="0" style="margin-left:auto; flex-shrink:0; opacity:.75; cursor:pointer; position:relative; top:2px; display:flex; align-items:center; justify-content:center; width:58px; height:58px; transition:transform .14s ease, opacity .14s ease;">
+            <img src="assets/coffee-e.svg" alt="请我喝杯咖啡" style="width:56px; height:56px; object-fit:contain; transform:scaleX(-1); filter:brightness(0) invert(1) drop-shadow(0 1px 1.3px rgba(60,40,5,.32));">
           </div>
         </div>
 
@@ -514,6 +535,9 @@
               <div style="flex:1;">
                 <div style="font-size:17px; font-weight:700; color:oklch(20% 0.02 60); font-family:Georgia">${esc(state.data.user.screen_name)}</div>
                 <div style="font-size:12px; color:oklch(50% 0.02 60); font-family:Georgia">${esc(state.data.user.description)}</div>
+              </div>
+              <div data-coffee="1" title="请我喝杯咖啡" role="button" tabindex="0" style="flex-shrink:0; cursor:pointer; opacity:.9; display:${wide?'block':'none'}; position:relative; width:44px; height:46px; transition:transform .14s ease, opacity .14s ease;">
+                <img src="assets/cafe.svg" alt="请我喝杯咖啡" style="position:absolute; left:50%; top:calc(50% - 3px); height:44px; width:auto; object-fit:contain; transform:translate(-50%,-50%); filter:brightness(0) invert(1) drop-shadow(0 2px 3px rgba(50,35,10,.55));">
               </div>
               <div style="display:flex; align-items:baseline; gap:7px; padding:7px 14px; background:oklch(96.5% 0.013 92); border-radius:12px;">
                 <span style="font:700 17px Georgia; color:oklch(28% 0.03 60);">${monthCn}</span>
@@ -544,6 +568,12 @@
     if (mobileBack) mobileBack.addEventListener('click', goBack);
     document.querySelectorAll('[data-lb]').forEach(img => {
       img.addEventListener('click', () => openLightbox(img.dataset.lb));
+    });
+    document.querySelectorAll('[data-coffee]').forEach(el => {
+      el.addEventListener('click', openReward);
+      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openReward(); } });
+      el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.18)'; });
+      el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
     });
 
     const readEl = document.querySelector('[data-read]');
